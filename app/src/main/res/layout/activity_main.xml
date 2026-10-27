@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#101A28">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <!-- Mowsie -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:gravity="center"
+            android:text="@string/app_name"
+            android:textColor="#FFFFFF"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
+        <!-- Current Stash -->
+        <TextView
+            android:id="@+id/identityName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:gravity="center"
+            android:text="@string/stash_name"
+            android:textColor="#F5F8FC"
+            android:textSize="21sp" />
+
+        <!-- QR Display / Camera Window -->
+        <FrameLayout
+            android:id="@+id/qrWindow"
+            android:layout_width="match_parent"
+            android:layout_height="246dp"
+            android:layout_marginTop="12dp"
+            android:background="#EDF2F8">
+
+            <TextView
+                android:id="@+id/qrPlaceholder"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/qr_placeholder"
+                android:textColor="#526477"
+                android:textSize="16sp" />
+
+        </FrameLayout>
+
+        <!-- Field Selector -->
+        <TextView
+            android:id="@+id/fieldName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:gravity="center"
+            android:text="@string/synchronize_fields"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp" />
+
+        <!-- Field Balance -->
+        <TextView
+            android:id="@+id/balanceText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="@string/no_fields"
+            android:textColor="#93ACC6"
+            android:textSize="16sp" />
+
+        <!-- Keep the Home Screen Spacious -->
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <!-- Main Action -->
+        <Button
+            android:id="@+id/sendButton"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:backgroundTint="#496F97"
+            android:text="@string/send"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp" />
+
+    </LinearLayout>
+
+</FrameLayout>

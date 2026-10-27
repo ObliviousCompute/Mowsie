@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Mowsie</string>
+    <string name="stash_name">New Stash</string>
+    <string name="name_stash">Name your Stash</string>
+    <string name="qr_placeholder">QR Code</string>
+    <string name="scan_placeholder">Camera coming soon</string>
+    <string name="synchronize_fields">Synchronize Fields</string>
+    <string name="no_fields">No fields yet</string>
+    <string name="send">Send</string>
+    <string name="receive">Receive</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+</resources>
