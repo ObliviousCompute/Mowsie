@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,88 +8,214 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="24dp">
+        android:orientation="vertical">
 
-        <!-- Mowsie -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:gravity="center"
-            android:text="@string/app_name"
-            android:textColor="#FFFFFF"
-            android:textSize="28sp"
-            android:textStyle="bold" />
-
-        <!-- Current Stash -->
-        <TextView
-            android:id="@+id/identityName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
-            android:gravity="center"
-            android:text="@string/stash_name"
-            android:textColor="#F5F8FC"
-            android:textSize="21sp" />
-
-        <!-- QR Display / Camera Window -->
+        <!-- Click the layered Mowsie/Omega logo to open or close the hood. -->
         <FrameLayout
-            android:id="@+id/qrWindow"
+            android:id="@+id/logoToggle"
             android:layout_width="match_parent"
-            android:layout_height="246dp"
-            android:layout_marginTop="12dp"
-            android:background="#EDF2F8">
+            android:layout_height="125dp"
+            android:clickable="true"
+            android:contentDescription="Open or close Recovery Hood"
+            android:focusable="true">
+
+            <View
+                android:id="@+id/logoGlow"
+                android:layout_width="235dp"
+                android:layout_height="112dp"
+                android:layout_gravity="center_horizontal|top" />
+
+            <ImageView
+                android:id="@+id/omegaLogo"
+                android:layout_width="126dp"
+                android:layout_height="106dp"
+                android:layout_gravity="center_horizontal|top"
+                android:alpha="0.50"
+                android:contentDescription=""
+                android:importantForAccessibility="no"
+                android:scaleType="fitCenter"
+                android:src="@drawable/mowsieomega" />
+
+            <ImageView
+                android:id="@+id/mowsieHeader"
+                android:layout_width="242dp"
+                android:layout_height="62dp"
+                android:layout_gravity="center_horizontal|top"
+                android:layout_marginTop="32dp"
+                android:contentDescription=""
+                android:importantForAccessibility="no"
+                android:scaleType="fitCenter"
+                android:src="@drawable/mowsieheader" />
 
             <TextView
-                android:id="@+id/qrPlaceholder"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:id="@+id/hoodTab"
+                android:layout_width="70dp"
+                android:layout_height="21dp"
+                android:layout_gravity="bottom|center_horizontal"
                 android:gravity="center"
-                android:text="@string/qr_placeholder"
-                android:textColor="#526477"
-                android:textSize="16sp" />
-
+                android:text="⌄"
+                android:textColor="#BAD1E6"
+                android:textSize="18sp" />
         </FrameLayout>
 
-        <!-- Field Selector -->
-        <TextView
-            android:id="@+id/fieldName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
-            android:gravity="center"
-            android:text="@string/synchronize_fields"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp" />
-
-        <!-- Field Balance -->
-        <TextView
-            android:id="@+id/balanceText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:gravity="center"
-            android:text="@string/no_fields"
-            android:textColor="#93ACC6"
-            android:textSize="16sp" />
-
-        <!-- Keep the Home Screen Spacious -->
-        <Space
+        <!-- Invisible when closed. The hood overlays only this region, not Send. -->
+        <FrameLayout
+            android:id="@+id/windowStack"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_weight="1">
 
-        <!-- Main Action -->
+            <LinearLayout
+                android:id="@+id/mainContent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:paddingLeft="24dp"
+                android:paddingRight="24dp">
+
+                <TextView
+                    android:id="@+id/identityName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center"
+                    android:text="@string/stash_name"
+                    android:textColor="#F5F8FC"
+                    android:textSize="21sp" />
+
+                <FrameLayout
+                    android:id="@+id/qrWindow"
+                    android:layout_width="match_parent"
+                    android:layout_height="246dp"
+                    android:layout_marginTop="12dp"
+                    android:background="@android:color/transparent">
+
+                    <!-- Native, square-pixel QR drawing. The container stays invisible. -->
+                    <com.mowsie.app.MowsieQrView
+                        android:id="@+id/qrPattern"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:clickable="true"
+                        android:contentDescription="Mowsie test QR code. Tap to compare scanning contrast."
+                        android:focusable="true" />
+
+                    <!-- The camera placeholder appears only in Send mode. -->
+                    <TextView
+                        android:id="@+id/qrPlaceholder"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="@string/scan_placeholder"
+                        android:textColor="#93ACC6"
+                        android:textSize="16sp"
+                        android:visibility="gone" />
+                </FrameLayout>
+
+                <TextView
+                    android:id="@+id/fieldName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="28dp"
+                    android:gravity="center"
+                    android:text="@string/synchronize_fields"
+                    android:textColor="#FFFFFF"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/balanceText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center"
+                    android:text="@string/no_fields"
+                    android:textColor="#93ACC6"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/hoodPanel"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:paddingLeft="24dp"
+                android:paddingTop="24dp"
+                android:paddingRight="24dp"
+                android:paddingBottom="24dp"
+                android:visibility="invisible">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Recovery"
+                        android:textColor="#F5F8FC"
+                        android:textSize="21sp" />
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_weight="1" />
+
+                    <TextView
+                        android:id="@+id/settingsButton"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:clickable="true"
+                        android:contentDescription="Advanced settings"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:text="⚙"
+                        android:textColor="#BED0E1"
+                        android:textSize="27sp" />
+                </LinearLayout>
+
+                <!-- Twelve borderless numbered positions are created in Kotlin. -->
+                <GridLayout
+                    android:id="@+id/wordGrid"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="18dp"
+                    android:columnCount="3"
+                    android:rowCount="4" />
+
+                <TextView
+                    android:id="@+id/recoveryHint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:gravity="center"
+                    android:text="Recovery words arrive with Genesis."
+                    android:textColor="#9FB2C8"
+                    android:textSize="13sp" />
+
+                <Button
+                    android:id="@+id/revealButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:layout_marginTop="18dp"
+                    android:backgroundTint="#496F97"
+                    android:text="Reveal"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp" />
+            </LinearLayout>
+        </FrameLayout>
+
         <Button
             android:id="@+id/sendButton"
             android:layout_width="match_parent"
             android:layout_height="56dp"
+            android:layout_marginLeft="24dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="24dp"
+            android:layout_marginBottom="16dp"
             android:backgroundTint="#496F97"
             android:text="@string/send"
             android:textColor="#FFFFFF"
             android:textSize="18sp" />
-
     </LinearLayout>
-
 </FrameLayout>

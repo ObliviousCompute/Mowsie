@@ -3,6 +3,7 @@
     <string name="app_name">Mowsie</string>
     <string name="stash_name">New Stash</string>
     <string name="name_stash">Name your Stash</string>
+    <string name="choose_color">Choose Stash Color</string>
     <string name="qr_placeholder">QR Code</string>
     <string name="scan_placeholder">Camera coming soon</string>
     <string name="synchronize_fields">Synchronize Fields</string>
@@ -11,4 +12,13 @@
     <string name="receive">Receive</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
+
+    <string-array name="stash_colors">
+        <item>Hot Pink</item>
+        <item>Purple</item>
+        <item>Green</item>
+        <item>Blue</item>
+        <item>Gold</item>
+        <item>White</item>
+    </string-array>
 </resources>

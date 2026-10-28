@@ -41,4 +41,7 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
+    implementation("com.google.zxing:core:3.5.4")
+    implementation("cash.z.ecc.android:kotlin-bip39:1.0.9")
+    implementation("org.bouncycastle:bcprov-jdk15to18:1.86")
 }
