@@ -1,2 +1,2 @@
 # Mowsie
-Open-source monetary fabric for anyone.
+Open-source monetary fabric.
