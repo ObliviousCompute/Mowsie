@@ -22,5 +22,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Mowsie"
+rootProject.name = "MowsieV19"
 include(":app")

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 312 750" width="312" height="750" role="img" aria-label="Mowsie crystal, illuminated">
+  <title>Mowsie Crystal — Illuminated</title>
+  <!-- Same geometry in both states; gradients are contained within the stone. -->
+  <defs>
+    <linearGradient id="facet0" x1="0%" y1="0%" x2="50%" y2="100%"><stop offset="0" stop-color="#d3b2ff"/><stop offset="1" stop-color="#5c4ab5"/></linearGradient>
+<linearGradient id="facet1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0" stop-color="#aa7cf0"/><stop offset="1" stop-color="#3f2e92"/></linearGradient>
+<linearGradient id="facet2" x1="0%" y1="0%" x2="50%" y2="100%"><stop offset="0" stop-color="#9eeede"/><stop offset="1" stop-color="#6c62c4"/></linearGradient>
+<linearGradient id="facet3" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0" stop-color="#a169eb"/><stop offset="1" stop-color="#5b3db8"/></linearGradient>
+<linearGradient id="facet4" x1="0%" y1="0%" x2="50%" y2="100%"><stop offset="0" stop-color="#76e5d5"/><stop offset="1" stop-color="#7653b6"/></linearGradient>
+<linearGradient id="facet5" x1="0%" y1="0%" x2="50%" y2="100%"><stop offset="0" stop-color="#70c9cf"/><stop offset="1" stop-color="#876ae6"/></linearGradient>
+<linearGradient id="facet6" x1="0%" y1="0%" x2="50%" y2="100%"><stop offset="0" stop-color="#b8a0ff"/><stop offset="1" stop-color="#ebc2fb"/></linearGradient>
+<linearGradient id="facet7" x1="100%" y1="25%" x2="0%" y2="85%"><stop offset="0" stop-color="#aa80ed"/><stop offset="1" stop-color="#67d7d4"/></linearGradient>
+    <clipPath id="stoneClip"><path d="M 158 16 L 286 344 L 264 556 L 246 631 L 158 731 L 80 633 L 55 537 L 26 429 L 28 276 Z"/></clipPath>
+  </defs>
+  <g clip-path="url(#stoneClip)">
+    <path d="M 158 16 L 286 344 L 264 556 L 246 631 L 158 731 L 80 633 L 55 537 L 26 429 L 28 276 Z" fill="#6943c0"/>
+    <polygon points="158,16 28,276 84,256 163,143" fill="url(#facet0)"/>
+<polygon points="158,16 163,143 84,256 204,389 286,344" fill="url(#facet1)"/>
+<polygon points="28,276 26,429 84,256" fill="url(#facet2)"/>
+<polygon points="84,256 26,429 55,537 151,663 204,389" fill="url(#facet3)"/>
+<polygon points="204,389 151,663 264,556 286,344" fill="url(#facet4)"/>
+<polygon points="55,537 80,633 151,663" fill="url(#facet5)"/>
+<polygon points="80,633 158,731 151,663" fill="url(#facet6)"/>
+<polygon points="151,663 158,731 246,631 264,556" fill="url(#facet7)"/>
+    <g fill="none" stroke="#d1c3ff" stroke-width="2" opacity=".86" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M 158 16 L 163 143 L 84 256"/>
+<path d="M 28 276 L 84 256 L 204 389 L 286 344"/>
+<path d="M 84 256 L 26 429 L 55 537 L 151 663"/>
+<path d="M 204 389 L 151 663 L 158 731"/>
+<path d="M 151 663 L 80 633"/>
+<path d="M 151 663 L 264 556"/>
+    </g>
+    <g fill="none" stroke="#f7ffff" stroke-width="1" opacity=".82" stroke-linecap="round">
+      <path d="M 146 45 L 45 277 L 43 320" />
+      <path d="M 168 49 L 270 331" />
+      <path d="M 258 570 L 240 627 L 167 717" />
+    </g>
+  </g>
+  <path d="M 158 16 L 286 344 L 264 556 L 246 631 L 158 731 L 80 633 L 55 537 L 26 429 L 28 276 Z" fill="none" stroke="#e6dfff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
