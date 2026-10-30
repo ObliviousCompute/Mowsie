@@ -11,8 +11,19 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MowsieV01">
+        <!-- Temporary PNGs are served as image/png URIs for Android clipboard paste. -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.qrfiles"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/qrclip_paths" />
+        </provider>
         <activity
             android:name=".MainActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="true"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>

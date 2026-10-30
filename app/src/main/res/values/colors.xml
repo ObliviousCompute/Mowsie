@@ -2,4 +2,8 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <!-- Shared face color for the login Omega, blast doors, and status bar. -->
+    <color name="blast_door">#FF111C2A</color>
+    <color name="oblivion_chamber">#FF0C1521</color>
+    <color name="airlock_onyx">@color/blast_door</color>
 </resources>

@@ -42,8 +42,8 @@ class FieldWheelView @JvmOverloads constructor(
     private val FontScale = resources.displayMetrics.scaledDensity
     private val Spacing = 57f * D
     private val TouchSlop = ViewConfiguration.get(Context).scaledTouchSlop
-    private val ActiveInk = Color.parseColor("#ECF1F8")
-    private val FadedInk = Color.parseColor("#9AADC6")
+    var FieldInk: Int = Color.parseColor("#B3D0BF")
+        set(Value) { field = Value; invalidate() }
     private val Brush = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         textAlign = Paint.Align.CENTER
         typeface = android.graphics.Typeface.create("sans-serif", android.graphics.Typeface.NORMAL)
@@ -112,7 +112,8 @@ class FieldWheelView @JvmOverloads constructor(
             if (Y < -50f * D || Y > H + 50f * D) return@forEachIndexed
             val Visibility = (1f - abs(Distance) * .22f).coerceIn(.08f, 1f)
             val Focus = (1f - abs(Distance)).coerceIn(0f, 1f)
-            Brush.color = if (Focus > .5f) ActiveInk else FadedInk
+            Brush.color = FieldInk
+            PhosphorInk.Apply(Brush, FieldInk, D)
             Brush.alpha = ((76f + Focus * 176f) * Visibility).toInt().coerceIn(0, 255)
             Brush.textSize = (17.5f + Focus * 5f) * FontScale
             Brush.typeface = android.graphics.Typeface.create("sans-serif",

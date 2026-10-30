@@ -3,11 +3,15 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0C1521">
+    android:background="@color/blast_door">
 
+    <!-- Insets are applied as padding to the root FrameLayout in MainActivity.
+         This content face fills only the interior, leaving the top status-bar
+         inset the exact same solid color as the upper blast door. -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/oblivion_chamber"
         android:orientation="vertical">
 
         <FrameLayout
@@ -31,7 +35,7 @@
                 android:gravity="top|center_horizontal"
                 android:orientation="vertical">
 
-                <TextView
+                <com.mowsie.app.PhosphorTextView
                     android:id="@+id/identityName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -49,6 +53,7 @@
                     android:layout_marginLeft="8dp"
                     android:layout_marginTop="4dp"
                     android:layout_marginRight="8dp"
+                    android:translationY="-10dp"
                     android:background="@android:color/transparent">
 
                     <com.mowsie.app.MowsieQrView
@@ -57,9 +62,11 @@
                         android:layout_height="match_parent"
                         android:clickable="true"
                         android:contentDescription="Mowsie public identity QR code"
-                        android:focusable="true" />
+                        android:defaultFocusHighlightEnabled="false"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false" />
 
-                    <TextView
+                    <com.mowsie.app.PhosphorTextView
                         android:id="@+id/qrPlaceholder"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -73,6 +80,8 @@
                 <FrameLayout
                     android:id="@+id/bottomDoorContainer"
                     android:layout_width="match_parent"
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:layout_marginTop="8dp"
@@ -96,7 +105,7 @@
                         android:paddingBottom="12dp">
 
                         <!-- The stored Stash identity moves WITH the lower door. -->
-                        <TextView
+                        <com.mowsie.app.PhosphorTextView
                             android:id="@+id/stashDoorName"
                             android:layout_width="match_parent"
                             android:layout_height="48dp"
@@ -108,7 +117,7 @@
                             android:textColor="#F5F8FC"
                             android:textSize="22sp" />
 
-                        <TextView
+                        <com.mowsie.app.PhosphorTextView
                             android:id="@+id/fieldName"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -118,7 +127,7 @@
                             android:textColor="#F0F3FA"
                             android:textSize="19sp" />
 
-                        <TextView
+                        <com.mowsie.app.PhosphorTextView
                             android:id="@+id/balanceText"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -142,68 +151,66 @@
                 android:paddingBottom="24dp"
                 android:visibility="invisible">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Recovery"
-                        android:textColor="#F5F8FC"
-                        android:textSize="21sp" />
-
-                    <Space
-                        android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        android:layout_weight="1" />
-
-                    <TextView
-                        android:id="@+id/settingsButton"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:clickable="true"
-                        android:contentDescription="Advanced settings"
-                        android:focusable="true"
-                        android:gravity="center"
-                        android:text="⚙"
-                        android:textColor="#BED0E1"
-                        android:textSize="27sp" />
-                </LinearLayout>
-
                 <GridLayout
                     android:id="@+id/wordGrid"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="18dp"
+                    android:layout_marginTop="6dp"
                     android:columnCount="3"
                     android:rowCount="4" />
 
-                <TextView
-                    android:id="@+id/recoveryHint"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:gravity="center"
-                    android:text="Recovery words arrive with Genesis."
-                    android:textColor="#9FB2C8"
-                    android:textSize="13sp" />
-
-                <Button
-                    android:id="@+id/revealButton"
+                <!-- Grid -> action -> indicator. The action position NEVER moves. -->
+                <FrameLayout
+                    android:id="@+id/recoveryActionSlot"
                     android:layout_width="match_parent"
                     android:layout_height="52dp"
-                    android:layout_marginTop="18dp"
-                    android:backgroundTint="#496F97"
-                    android:text="Reveal"
-                    android:textColor="#FFFFFF"
-                    android:textSize="16sp" />
+                    android:layout_marginTop="8dp">
+
+                    <!-- Reveal / Restore / Save are plain, centered text. -->
+                    <com.mowsie.app.PhosphorTextView
+                        android:id="@+id/revealButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:clickable="true"
+                        android:defaultFocusHighlightEnabled="false"
+                        android:focusable="false"
+                        android:gravity="center"
+                        android:text="Reveal"
+                        android:textColor="#F0F3FA"
+                        android:textSize="20sp" />
+
+                    <!-- Secret is masked IN the same position as Reveal.
+                         No border, underline, or blinking Android caret. -->
+                    <com.mowsie.app.PhosphorEditText
+                        android:id="@+id/recoverySecret"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@android:color/transparent"
+                        android:gravity="center"
+                        android:inputType="textPassword"
+                        android:imeOptions="actionDone|flagNoExtractUi"
+                        android:singleLine="true"
+                        android:cursorVisible="false"
+                        android:defaultFocusHighlightEnabled="false"
+                        android:textColor="#F0F3FA"
+                        android:textSize="20sp"
+                        android:visibility="gone" />
+                </FrameLayout>
+
+                <!-- Permanent reserved indicator row. Copied / Pasted / Secret
+                     prompts never reflow the recovery grid or action. -->
+                <com.mowsie.app.PhosphorStatusTextView
+                    android:id="@+id/recoveryHint"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:gravity="center"
+                    android:textColor="#667587"
+                    android:textSize="20sp"
+                    android:visibility="invisible" />
             </LinearLayout>
         </FrameLayout>
 
-        <Button
+        <com.mowsie.app.PhosphorButton
             android:id="@+id/sendButton"
             android:layout_width="match_parent"
             android:layout_height="1dp"
