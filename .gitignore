@@ -30,6 +30,7 @@ Thumbs.db
 
 # Built packages and local archives
 *.apk
+!MowsieDEMO.apk
 *.aab
 *.apks
 *.zip
