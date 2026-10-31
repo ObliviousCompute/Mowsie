@@ -5,13 +5,15 @@
     android:layout_height="match_parent"
     android:background="@color/blast_door">
 
-    <!-- Insets are applied as padding to the root FrameLayout in MainActivity.
+    <!-- Insets are applied as padding to the root FrameLayout in ControlPanel.
          This content face fills only the interior, leaving the top status-bar
          inset the exact same solid color as the upper blast door. -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/oblivion_chamber"
+        android:clipChildren="false"
+        android:clipToPadding="false"
         android:orientation="vertical">
 
         <FrameLayout
@@ -26,12 +28,16 @@
             android:id="@+id/windowStack"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:clipChildren="false"
+            android:clipToPadding="false">
 
             <LinearLayout
                 android:id="@+id/mainContent"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:clipChildren="false"
+                android:clipToPadding="false"
                 android:gravity="top|center_horizontal"
                 android:orientation="vertical">
 
@@ -50,6 +56,8 @@
                     android:id="@+id/qrWindow"
                     android:layout_width="match_parent"
                     android:layout_height="320dp"
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
                     android:layout_marginLeft="8dp"
                     android:layout_marginTop="4dp"
                     android:layout_marginRight="8dp"
@@ -100,7 +108,7 @@
                         android:gravity="top|center_horizontal"
                         android:orientation="vertical"
                         android:paddingLeft="18dp"
-                        android:paddingTop="57dp"
+                        android:paddingTop="342dp"
                         android:paddingRight="18dp"
                         android:paddingBottom="12dp">
 
@@ -111,7 +119,7 @@
                             android:layout_height="48dp"
                             android:clickable="true"
                             android:focusable="true"
-                            android:contentDescription="Tap to raise or lower the field door"
+                            android:contentDescription="Public identity. Tap to raise or lower the field door"
                             android:gravity="center"
                             android:text="Metronome"
                             android:textColor="#F5F8FC"
@@ -119,6 +127,7 @@
 
                         <com.mowsie.app.PhosphorTextView
                             android:id="@+id/fieldName"
+                            android:visibility="gone"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="16dp"
@@ -129,6 +138,7 @@
 
                         <com.mowsie.app.PhosphorTextView
                             android:id="@+id/balanceText"
+                            android:visibility="gone"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
@@ -163,7 +173,7 @@
                 <FrameLayout
                     android:id="@+id/recoveryActionSlot"
                     android:layout_width="match_parent"
-                    android:layout_height="52dp"
+                    android:layout_height="48dp"
                     android:layout_marginTop="8dp">
 
                     <!-- Reveal / Restore / Save are plain, centered text. -->

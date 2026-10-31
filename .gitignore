@@ -1,15 +1,35 @@
-*.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+# Android / Gradle generated output
+.gradle/
+**/build/
 local.properties
+.externalNativeBuild/
+.cxx/
+captures/
+
+# Android Studio local state
+.idea/
+*.iml
+
+# Signing keys and local secrets
+*.jks
+*.keystore
+*.p12
+*.pfx
+*.pem
+*.key
+*.env
+.env
+.env.*
+
+# OS and editor detritus
+.DS_Store
+Thumbs.db
+*~
+*.swp
+*.swo
+
+# Built packages and local archives
+*.apk
+*.aab
+*.apks
+*.zip

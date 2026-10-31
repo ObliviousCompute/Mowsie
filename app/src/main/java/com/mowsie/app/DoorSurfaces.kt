@@ -9,8 +9,6 @@ import android.graphics.Region
 import android.util.AttributeSet
 import android.view.View
 import android.view.MotionEvent
-import androidx.appcompat.content.res.AppCompatResources
-import kotlin.math.min
 
 /**
  * Both mating edges use one dimensional profile. The upper door's positive
@@ -165,10 +163,9 @@ internal object AirlockGeometry {
     }
 
     fun Edge(W: Float, D: Float): Path {
-        // V48: Door 3 uses the exact dimensional family of Door 2's Ω tooth,
+        // Door 3 uses the exact dimensional family of Door 2's Ω tooth,
         // inverted so its crown rises into the QR chamber. The wide, flat
-        // V50: raise only the horizontal shoulder another 5dp (39dp -> 34dp).
-        // The center TOP stays at 3dp, preserving the Omega's original pixels
+        // The shoulder and crown use separate offsets to preserve the Ω relief.
         // and the 48dp airlock anchor / existing animation stops.
         val Shoulder = 34f * D
         val Crown = 3f * D
@@ -192,7 +189,7 @@ internal object AirlockGeometry {
  * Matching blue-black obsidian airlock. The entire panel is a single solid shape,
  * with the inverted 41dp Ω tooth of Door 2. It is mounted BEHIND the
  * lower blast door, which occludes its lower face and preserves the existing
- * centered embossed Omega and motion.
+ * animated Trinity and motion.
  *
  * Geometry: the airlock is still anchored 48dp above Door 1's lip.
  * Its crown remains 3dp from the airlock top, while the new full-width
@@ -222,13 +219,6 @@ class AirlockHatchView @JvmOverloads constructor(
         color = Color.parseColor("#455667")
         alpha = 43
     }
-    private val TitlePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        textAlign = Paint.Align.CENTER
-        textSize = 20f * resources.displayMetrics.scaledDensity
-        typeface = android.graphics.Typeface.create("sans-serif", android.graphics.Typeface.BOLD)
-        color = Color.parseColor("#F5F8FC")
-        setShadowLayer(Dp(2.3f), 0f, Dp(1.4f), Color.parseColor("#B900050B"))
-    }
     private val ItemPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         textAlign = Paint.Align.CENTER
         textSize = 20f * resources.displayMetrics.scaledDensity
@@ -240,9 +230,6 @@ class AirlockHatchView @JvmOverloads constructor(
         set(Value) { field = Value; invalidate() }
     var SecondaryInk: Int = Color.parseColor("#B3D0BF")
         set(Value) { field = Value; invalidate() }
-    private val OmegaShadow = AppCompatResources.getDrawable(Context, R.drawable.mowsieomega)?.mutate()
-    private val OmegaBevel = AppCompatResources.getDrawable(Context, R.drawable.mowsieomega)?.mutate()
-    private val OmegaFace = AppCompatResources.getDrawable(Context, R.drawable.mowsieomega)?.mutate()
 
     var Mode: String = "SYNC"
         set(Value) {
@@ -251,7 +238,16 @@ class AirlockHatchView @JvmOverloads constructor(
             contentDescription = "Omega airlock, $Value"
         }
 
-    // Resting tooth always carries JUST its embossed Omega, no letters.
+    /** Four primary chamber choices live on the raised sheet. */
+    var OnMenuChoice: ((String) -> Unit)? = null
+    private val MenuChoices = listOf("Scan", "Peers", "Fields", "Lanterns")
+    // Four choices fill the original exposed height more evenly; the final
+    // row stays above Door1's notch without changing the selector travel.
+    private val MenuFirstLine = 114f
+    private val MenuLineStep = 52f
+    private var PressedChoice = -1
+
+    // Resting tooth carries only the floating Trinity, no lettering.
     // Gradual reveal begins only after the hatch clears the lower recess.
     var MenuReveal: Float = 0f
         set(Value) {
@@ -262,40 +258,39 @@ class AirlockHatchView @JvmOverloads constructor(
             }
         }
 
-    /** Only the actual crown is a tap target, never the invisible panel. */
+    /** Touch only the Trinity crown or an exposed menu choice. No invisible hit area. */
     override fun onTouchEvent(Event: MotionEvent): Boolean {
-        if (Event.actionMasked == MotionEvent.ACTION_DOWN) {
-            if (kotlin.math.abs(Event.x - width / 2f) > Dp(93f) ||
-                Event.y < 0f || Event.y > Dp(87f)) return false
+        val Centered = kotlin.math.abs(Event.x - width / 2f) <= Dp(113f)
+        val Crown = Centered && Event.y >= 0f && Event.y <= Dp(87f)
+        fun ChoiceAt(): Int {
+            if (MenuReveal < 0.95f || !Centered) return -1
+            return MenuChoices.indices.firstOrNull { Index ->
+                kotlin.math.abs(Event.y - Dp(MenuFirstLine + MenuLineStep * Index)) <= Dp(19f)
+            } ?: -1
         }
-        return super.onTouchEvent(Event)
+        return when (Event.actionMasked) {
+            MotionEvent.ACTION_DOWN -> {
+                PressedChoice = ChoiceAt()
+                if (PressedChoice >= 0) true
+                else if (Crown) super.onTouchEvent(Event)
+                else false
+            }
+            MotionEvent.ACTION_UP -> {
+                val Index = PressedChoice
+                PressedChoice = -1
+                if (Index >= 0) {
+                    if (ChoiceAt() == Index) OnMenuChoice?.invoke(MenuChoices[Index])
+                    true
+                } else super.onTouchEvent(Event)
+            }
+            MotionEvent.ACTION_CANCEL -> {
+                PressedChoice = -1
+                super.onTouchEvent(Event)
+            }
+            else -> if (PressedChoice >= 0) true else super.onTouchEvent(Event)
+        }
     }
 
-    private fun DrawOmega(Canvas: Canvas, Center: Float) {
-        // The upper Ω uses a 108 x 88dp ImageView with FIT_CENTER.
-        // The vector has a 1:1 viewport, so its ACTUAL rendered bounds are
-        // 88 x 88dp, centered within that frame. Drawing the full 108 x 88dp
-        // rectangle here stretched the lower Ω horizontally in V23.
-        // Match the upper glyph's true rendered dimensions, not its view box.
-        val Size = Dp(88f).toInt()
-        val Left = (Center - Size / 2f).toInt()
-        val Top = Dp(2f).toInt()
-        fun Layer(Drawable: android.graphics.drawable.Drawable?, Tint: Int,
-                  Alpha: Float, Dx: Float, Dy: Float) {
-            Drawable ?: return
-            Drawable.setTint(Tint)
-            Drawable.alpha = (255f * Alpha).toInt().coerceIn(0, 255)
-            val X = (Left + Dp(Dx)).toInt()
-            val Y = (Top + Dp(Dy)).toInt()
-            Drawable.setBounds(X, Y, X + Size, Y + Size)
-            Drawable.draw(Canvas)
-        }
-        // Identical emboss and face pigments to the upper blast-door Ω.
-        // The full-opacity face blends into the single shared door material.
-        Layer(OmegaShadow, Color.parseColor("#070C14"), .95f, 2f, 3f)
-        Layer(OmegaBevel, Color.parseColor("#334252"), .46f, -1f, -2f)
-        Layer(OmegaFace, context.getColor(R.color.blast_door), 1f, 0f, 0f)
-    }
 
     override fun onDraw(Canvas: Canvas) {
         super.onDraw(Canvas)
@@ -318,38 +313,19 @@ class AirlockHatchView @JvmOverloads constructor(
         Canvas.drawPath(Edge, Rim)
         Canvas.restore()
 
-        DrawOmega(Canvas, C)
-        // V52: keep the embossed Ω unobstructed. When Door 3 opens,
+        // The old Ω engraving is deliberately gone. The three moving Opal
+        // orbs are hosted by AirlockAssembly directly above this solid tab.
+        // Keep the floating Trinity unobstructed. When Door2 opens,
         // put all mode/menu lettering *below* the Ω, never across its face.
-        // Mode uses the saved Primary color, options use Secondary, and the
-        // existing static color-matched phosphor style follows both.
+        // All four choices use the saved PRIMARY color.
         if (MenuReveal > 0f) {
-            TitlePaint.color = PrimaryInk
-            ItemPaint.color = SecondaryInk
-            PhosphorInk.Apply(TitlePaint, PrimaryInk, Density)
-            PhosphorInk.Apply(ItemPaint, SecondaryInk, Density)
-            TitlePaint.alpha = (255f * MenuReveal).toInt().coerceIn(0, 255)
-            ItemPaint.alpha = TitlePaint.alpha
-            // Door 3 has a shallower exposed panel than Door 2, so its
-            // equally spaced text baselines use a compact 40dp rhythm.
-            // This keeps the fourth LOAD row clear of Door 1's lip.
-            val FirstLine = 115f
-            val LineStep = 40f
-            Canvas.drawText(Mode, C, Dp(FirstLine), TitlePaint)
-            when (Mode) {
-                "SYNC" -> {
-                    Canvas.drawText("Current", C, Dp(FirstLine + LineStep), ItemPaint)
-                    Canvas.drawText("All", C, Dp(FirstLine + LineStep * 2f), ItemPaint)
-                }
-                "LOAD" -> {
-                    Canvas.drawText("Paste", C, Dp(FirstLine + LineStep), ItemPaint)
-                    Canvas.drawText("Friends", C, Dp(FirstLine + LineStep * 2f), ItemPaint)
-                    Canvas.drawText("Upload", C, Dp(FirstLine + LineStep * 3f), ItemPaint)
-                }
-                "SEND" -> {
-                    Canvas.drawText("Preview", C, Dp(FirstLine + LineStep), ItemPaint)
-                    Canvas.drawText("Confirm", C, Dp(FirstLine + LineStep * 2f), ItemPaint)
-                }
+            ItemPaint.color = PrimaryInk
+            PhosphorInk.Apply(ItemPaint, PrimaryInk, Density)
+            ItemPaint.alpha = (255f * MenuReveal).toInt().coerceIn(0, 255)
+            // Four generously spaced rows finish above
+            // Door1's recessed center notch. The QR chamber stays unobstructed.
+            MenuChoices.forEachIndexed { Index, Label ->
+                Canvas.drawText(Label, C, Dp(MenuFirstLine + MenuLineStep * Index), ItemPaint)
             }
         }
     }
@@ -395,6 +371,34 @@ class HoodSheetView @JvmOverloads constructor(
         val H = height.toFloat()
         val D = resources.displayMetrics.density
         Canvas.drawPath(DoorGeometry.UpperShape(W, H, D), Fill)
+        // Fixed magnetic receiving seat, halfway between the three stationary
+        // opals. Its pigment is between the chamber and the door material.
+        // The lower-rim bevel borrows the same faint metal highlight as Door1.
+        val SeatCenterX = W / 2f
+        val SeatY = 67f * D
+        val SeatRadius = 15f * D
+        val SeatFill = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.parseColor("#0F1925")
+            style = Paint.Style.FILL
+        }
+        val SeatShadow = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.parseColor("#080E16")
+            style = Paint.Style.STROKE
+            strokeWidth = D * 1.5f
+            alpha = 105
+        }
+        val SeatBevel = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.parseColor("#78868C")
+            style = Paint.Style.STROKE
+            strokeWidth = D * 1.05f
+            alpha = 80
+            strokeCap = Paint.Cap.ROUND
+        }
+        Canvas.drawCircle(SeatCenterX, SeatY, SeatRadius, SeatFill)
+        Canvas.drawArc(SeatCenterX - SeatRadius, SeatY - SeatRadius,
+            SeatCenterX + SeatRadius, SeatY + SeatRadius, 205f, 145f, false, SeatShadow)
+        Canvas.drawArc(SeatCenterX - SeatRadius, SeatY - SeatRadius,
+            SeatCenterX + SeatRadius, SeatY + SeatRadius, 20f, 140f, false, SeatBevel)
         val Edge = DoorGeometry.UpperEdge(W, H, D)
         Rim.alpha = (110f * (1f - Mate)).toInt()
         Highlight.alpha = (35f * (1f - Mate)).toInt()
@@ -423,10 +427,8 @@ class HoodSheetView @JvmOverloads constructor(
  * Airlock depth pass between the third door and the LOWER blast door.
  * The raised pearl tooth casts outward onto the QR bay. The blast door
  * independently casts INWARD onto the pearl face wherever it overlaps.
- * V48 keeps the same shadow pigments and precise face clipping but makes
- * both lower-tier contact shadows narrower and sharper. Door 2 retains its
- * original broad 11dp chamber shadow. Each shadow follows its own geometry,
- * including the new flat, uninterrupted shoulders of Door 3.
+ * Both lower-tier contact shadows have a narrow edge, while Door2 retains
+ * a broad 11dp chamber shadow. Each shadow follows its own door geometry.
  */
 class AirlockDepthShadowsView(
     Context: Context, private val Airlock: View, private val Lower: View,
@@ -435,14 +437,14 @@ class AirlockDepthShadowsView(
     private val Density = resources.displayMetrics.density
     private val ToothShadow = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
-        // V51: a broader, slightly softer lip shadow FROM Door 3 ONTO the QR chamber.
+        // a broader, slightly softer lip shadow FROM Door 3 ONTO the QR chamber.
         color = Color.parseColor("#9C02070A")
         strokeWidth = Density * 1.35f
         setShadowLayer(3.25f * Density, 0f, -1.0f * Density, Color.parseColor("#D8000305"))
     }
     private val BlastShadow = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
-        // V51: Door 1 now uses the same diffuse lip-shadow language ONTO Door 3.
+        // Door 1 now uses the same diffuse lip-shadow language ONTO Door 3.
         color = Color.parseColor("#9C02070A")
         strokeWidth = Density * 1.35f
         setShadowLayer(3.25f * Density, 0f, -1.0f * Density, Color.parseColor("#D8000305"))
@@ -596,62 +598,57 @@ class DoorShadowsView(
 
 
 /**
- * V36 sealed landscape presentation. It uses the SAME curved mating geometry
- * as the working portrait machine, but its doors extend across landscape width.
- * The screen stays fully covered. No QR, balance or second crystal can leak
- * through while the view is visible.
+ * Sealed landscape backplate. The portrait Ω and crystal are mounted
+ * separately as the SAME 318dp/244dp layered artwork, not miniatures drawn
+ * into this canvas. This view owns only the wide mating seam and, when the
+ * full assembly fits, the same recessed Trinity socket as HoodSheetView.
+ * Nothing behind this opaque scene can expose the Cache or the public QR.
  */
 class LandscapeSealedDoorsView @JvmOverloads constructor(
     Context: Context, Attributes: AttributeSet? = null
 ) : View(Context, Attributes) {
-    private val D = resources.displayMetrics.density
-    private fun Dp(Value: Float) = Value * D
+    private val Density = resources.displayMetrics.density
+    private fun Dp(Value: Float) = Value * Density
+
+    var SeamDp = 50f
+        set(Value) { field = Value; invalidate() }
+    var ShowTrinity = true
+        set(Value) { field = Value; invalidate() }
 
     private val Face = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Context.getColor(R.color.blast_door)
         style = Paint.Style.FILL
     }
+    // Match the closed portrait doors: same dark crack ink as
+    // BottomDoorView/HoodSheetView and the same subtle lower lip highlight.
     private val Groove = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#080F1A")
+        color = Color.parseColor("#030710")
         style = Paint.Style.STROKE
-        strokeWidth = Dp(1.2f)
-        alpha = 185
+        strokeWidth = Dp(1.25f)
+        alpha = 190
     }
     private val LightRim = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#3A4B5B")
+        color = Color.parseColor("#78868C")
         style = Paint.Style.STROKE
-        strokeWidth = Dp(0.75f)
-        alpha = 72
+        strokeWidth = Dp(0.85f)
+        alpha = 52
     }
-    private val OmegaShadow = AppCompatResources.getDrawable(Context, R.drawable.mowsieomega)?.mutate()
-    private val OmegaBevel = AppCompatResources.getDrawable(Context, R.drawable.mowsieomega)?.mutate()
-    private val OmegaFace = AppCompatResources.getDrawable(Context, R.drawable.mowsieomega)?.mutate()
-
-    init {
-        isClickable = false
-        isFocusable = false
-        importantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_NO
-        setLayerType(LAYER_TYPE_SOFTWARE, null)
+    private val SeatFill = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#0F1925")
+        style = Paint.Style.FILL
     }
-
-    private fun DrawOmega(Canvas: Canvas, CenterX: Float, CenterY: Float) {
-        // Portrait door 2 renders its 1:1 vector into an 88dp square.
-        val Size = Dp(88f).toInt()
-        val Left = (CenterX - Size / 2f).toInt()
-        val Top = (CenterY - Size / 2f).toInt()
-        fun Layer(Drawable: android.graphics.drawable.Drawable?, Tint: Int,
-                  Alpha: Float, Dx: Float, Dy: Float) {
-            Drawable ?: return
-            Drawable.setTint(Tint)
-            Drawable.alpha = (255f * Alpha).toInt().coerceIn(0, 255)
-            val X = Left + Dp(Dx).toInt()
-            val Y = Top + Dp(Dy).toInt()
-            Drawable.setBounds(X, Y, X + Size, Y + Size)
-            Drawable.draw(Canvas)
-        }
-        Layer(OmegaShadow, Color.parseColor("#070C14"), .95f, 2f, 3f)
-        Layer(OmegaBevel, Color.parseColor("#334252"), .46f, -1f, -2f)
-        Layer(OmegaFace, context.getColor(R.color.blast_door), 1f, 0f, 0f)
+    private val SeatShadow = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#080E16")
+        style = Paint.Style.STROKE
+        strokeWidth = Dp(1.5f)
+        alpha = 105
+    }
+    private val SeatBevel = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#78868C")
+        style = Paint.Style.STROKE
+        strokeWidth = Dp(1.05f)
+        alpha = 80
+        strokeCap = Paint.Cap.ROUND
     }
 
     override fun onDraw(Canvas: Canvas) {
@@ -659,15 +656,28 @@ class LandscapeSealedDoorsView @JvmOverloads constructor(
         val W = width.toFloat()
         val H = height.toFloat()
         if (W <= 0f || H <= 0f) return
-        // One uniform material. Door 1 meets door 2 with the existing Ω tooth.
         Canvas.drawRect(0f, 0f, W, H, Face)
-        val Seam = H / 2f - Dp(10f)
-        val Edge = DoorGeometry.UpperEdge(W, Seam + Dp(44f), D)
+
+        // Same curved mating family as portrait, but its shoulders run across
+        // the full landscape width instead of stopping at a narrow tab.
+        val Edge = DoorGeometry.UpperEdge(W, Dp(SeamDp + 44f), Density)
         Canvas.drawPath(Edge, Groove)
         Canvas.save()
         Canvas.translate(0f, -Dp(1.35f))
         Canvas.drawPath(Edge, LightRim)
         Canvas.restore()
-        DrawOmega(Canvas, W / 2f, Seam - Dp(2f))
+
+        // Recessed Trinity socket; the docked orb is a separate foreground
+        // image in Lock.kt.
+        if (ShowTrinity) {
+            val X = W / 2f
+            val Y = Dp(47f)
+            val R = Dp(15f)
+            Canvas.drawCircle(X, Y, R, SeatFill)
+            Canvas.drawArc(X - R, Y - R, X + R, Y + R,
+                205f, 145f, false, SeatShadow)
+            Canvas.drawArc(X - R, Y - R, X + R, Y + R,
+                20f, 140f, false, SeatBevel)
+        }
     }
 }

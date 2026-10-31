@@ -5,7 +5,6 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.LinearGradient
 import android.graphics.Paint
-import android.view.View
 import android.graphics.Shader
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatButton
@@ -68,7 +67,7 @@ class PhosphorStatusTextView @JvmOverloads constructor(
     override fun onDraw(Canvas: Canvas) {
         super.onDraw(Canvas)
         val Word = text.toString()
-        if (!ShowStatusCheck || Word !in setOf("Success", "Copied", "Pasted")) return
+        if (!ShowStatusCheck || Word !in setOf("Success", "Copied", "Pasted", "Sent")) return
         val Brush = paint
         val Spacing = resources.displayMetrics.density * 7f
         // The text itself is centered by TextView's Gravity.CENTER. Add the
@@ -79,7 +78,7 @@ class PhosphorStatusTextView @JvmOverloads constructor(
     }
 }
 
-class PhosphorEditText @JvmOverloads constructor(
+open class PhosphorEditText @JvmOverloads constructor(
     Context: Context, Attributes: AttributeSet? = null,
     Style: Int = android.R.attr.editTextStyle
 ) : AppCompatEditText(Context, Attributes, Style) {
